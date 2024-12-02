@@ -269,7 +269,7 @@ pub enum DirectoryString<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::x509::{name::{self, AttributeTypeAndValue, OidCommonName, RelativeDistinguishedName, StringChoice, Value}, print_string::PrintableString};
+    use crate::x509::{name::{self, AttributeTypeAndValue, OidCommonName, RelativeDistinguishedName, StringChoice}, print_string::PrintableString};
 
     use super::*;
 

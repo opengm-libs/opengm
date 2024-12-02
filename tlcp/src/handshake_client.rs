@@ -7,12 +7,10 @@ use crate::consts::COMPRESSION_NONE;
 use crate::finished_hash::FinishedHash;
 use crate::key_agreement::get_client_key_agreement;
 use crate::messages::{
-    Alert, CertificateMsgBorrowed, ClientHelloMsgOwned, FinishedMsgOwned, FinishedMsgBorrowed,
-    ServerHelloDoneMsg, ServerHelloMsgBorrowed, ServerKeyExchangeMsgBorrowed,
+    Alert, CertificateMsgBorrowed, ClientHelloMsgOwned, FinishedMsgBorrowed, FinishedMsgOwned, ServerHelloDoneMsg, ServerHelloMsgBorrowed,
+    ServerKeyExchangeMsgBorrowed,
 };
-use crate::prf::{
-    compute_finished_verify_data, compute_master_secret, KeyBlock,
-};
+use crate::prf::{compute_finished_verify_data, compute_master_secret, KeyBlock};
 use crate::record::{Record, RecordType};
 use crate::traits::Hash;
 use crate::x509::certificate::parse_asn1_sm2_public;
@@ -33,29 +31,20 @@ pub(crate) fn make_client_hello(config: &Config) -> ClientHelloMsgOwned {
 }
 
 // precess ServerHelloMsg and returns the neociated (version, cipher_suite_id)
-pub fn precess_server_hello(
-    client_hello: &ClientHelloMsgOwned,
-    server_hello: &ServerHelloMsgBorrowed,
-) -> Result<(u16, u16)> {
+pub fn precess_server_hello(client_hello: &ClientHelloMsgOwned, server_hello: &ServerHelloMsgBorrowed) -> Result<(u16, u16)> {
     // check server_hello.ver
-    if server_hello.vers != client_hello.vers{
-        return Err(Alert::ProtocolVersion.into())
+    if server_hello.vers != client_hello.vers {
+        return Err(Alert::ProtocolVersion.into());
     }
     let vers = server_hello.vers;
     let suit = server_hello.cipher_suite_id;
-    if client_hello.cipher_suite_ids.contains(&suit){
-        return Ok((vers, suit))
+    if client_hello.cipher_suite_ids.contains(&suit) {
+        return Ok((vers, suit));
     }
-    return Err(Alert::HandshakeFailure.into())
-
+    return Err(Alert::HandshakeFailure.into());
 }
 // ClientHandshakeState do the handshake work after receiving server's hello.
-pub struct ClientHandshakeState<
-    'a,
-    C: io::Write + io::Read,
-    H: Hash<DIGEST_SIZE> + Default,
-    const DIGEST_SIZE: usize,
-> {
+pub struct ClientHandshakeState<'a, C: io::Write + io::Read, H: Hash<DIGEST_SIZE> + Default, const DIGEST_SIZE: usize> {
     pub conn: &'a mut Conn<C>,
     serverHello: ServerHelloMsgBorrowed<'a>,
     hello: ClientHelloMsgOwned,
@@ -75,36 +64,20 @@ pub struct ClientHandshakeState<
 }
 
 impl<'a, C, H, const DIGEST_SIZE: usize> Drop for ClientHandshakeState<'a, C, H, DIGEST_SIZE>
-where 
+where
     C: io::Write + io::Read,
     H: Hash<DIGEST_SIZE> + Default,
 {
     fn drop(&mut self) {
-        self.conn
-            .record_pool
-            .put(take(&mut self.certificate_record));
-        self.conn
-            .record_pool
-            .put(take(&mut self.server_key_exchange_record));
-        self.conn
-            .record_pool
-            .put(take(&mut self.server_hello_done_record));
-        self.conn
-            .record_pool
-            .put(take(&mut self.client_key_exchange));
-        self.conn
-            .record_pool
-            .put(take(&mut self.server_finished_record));
+        self.conn.record_pool.put(take(&mut self.certificate_record));
+        self.conn.record_pool.put(take(&mut self.server_key_exchange_record));
+        self.conn.record_pool.put(take(&mut self.server_hello_done_record));
+        self.conn.record_pool.put(take(&mut self.client_key_exchange));
+        self.conn.record_pool.put(take(&mut self.server_finished_record));
     }
 }
 
-impl<
-        'a,
-        C: io::Write + io::Read,
-        H: Hash<DIGEST_SIZE> + Default,
-        const DIGEST_SIZE: usize,
-    > ClientHandshakeState<'a, C, H, DIGEST_SIZE>
-{
+impl<'a, C: io::Write + io::Read, H: Hash<DIGEST_SIZE> + Default, const DIGEST_SIZE: usize> ClientHandshakeState<'a, C, H, DIGEST_SIZE> {
     pub fn new(
         conn: &'a mut Conn<C>,
         hello: ClientHelloMsgOwned,
@@ -142,41 +115,29 @@ impl<
 
         let certificate_record = &mut self.certificate_record;
         conn.read_record(certificate_record)?;
-        self.finishedHash
-            .write(certificate_record.fragment_as_ref());
-        let certificate =
-            CertificateMsgBorrowed::parse(certificate_record.fragment_as_ref())
-                .ok_or(Alert::UnexpectedMessage)?;
+        self.finishedHash.write(certificate_record.fragment_as_ref());
+        let certificate = CertificateMsgBorrowed::parse(certificate_record.fragment_as_ref()).ok_or(Alert::UnexpectedMessage)?;
         println!("Server: Certificate");
         // put certificate_record after ward.
 
         let server_key_exchange_record = &mut self.server_key_exchange_record;
         conn.read_record(server_key_exchange_record)?;
-        self.finishedHash
-            .write(server_key_exchange_record.fragment_as_ref());
-        let server_key_exchange_msg = ServerKeyExchangeMsgBorrowed::parse(
-            server_key_exchange_record.fragment_as_ref(),
-        )
-        .ok_or(Error::from(Alert::UnexpectedMessage))?;
+        self.finishedHash.write(server_key_exchange_record.fragment_as_ref());
+        let server_key_exchange_msg = ServerKeyExchangeMsgBorrowed::parse(server_key_exchange_record.fragment_as_ref())
+            .ok_or(Error::from(Alert::UnexpectedMessage))?;
         println!("Server: ServerKeyExchange");
 
         // ServerHelloDone
         let server_hello_done_record = &mut self.server_hello_done_record;
         conn.read_record(server_hello_done_record)?;
-        self.finishedHash
-            .write(server_hello_done_record.fragment_as_ref());
-        let server_hello_done = ServerHelloDoneMsg::parse(
-            server_hello_done_record.fragment_as_ref(),
-        )
-        .ok_or(Error::from(Alert::UnexpectedMessage))?;
+        self.finishedHash.write(server_hello_done_record.fragment_as_ref());
+        let server_hello_done =
+            ServerHelloDoneMsg::parse(server_hello_done_record.fragment_as_ref()).ok_or(Error::from(Alert::UnexpectedMessage))?;
         println!("ServerHelloDoneMsg: {:?}", server_hello_done);
 
         let mut public_keys = Vec::new();
         for cert in &certificate.certificates {
-            public_keys.push(
-                parse_asn1_sm2_public(cert)
-                    .ok_or(Error::DecodeSM2PublicFailure)?,
-            );
+            public_keys.push(parse_asn1_sm2_public(cert).ok_or(Error::DecodeSM2PublicFailure)?);
         }
         let server_sign_cert = x509::Certificate {
             raw: certificate.certificates[0].to_owned(),
@@ -208,33 +169,21 @@ impl<
         // }
 
         // verify the ServerKeyExchangeMsg
-        let mut ka = get_client_key_agreement(self.suite.id, server_enc_cert)
-            .ok_or(Error::NoKeyAgreementAvailable)?;
-        ka.process_server_key_exchange(
-            &self.hello,
-            &self.serverHello,
-            &server_key_exchange_msg,
-            &server_sign_cert,
-        )?;
+        let mut ka = get_client_key_agreement(self.suite.id, server_enc_cert).ok_or(Error::NoKeyAgreementAvailable)?;
+        ka.process_server_key_exchange(&self.hello, &self.serverHello, &server_key_exchange_msg, &server_sign_cert)?;
         println!("ServerKeyExchangeMsg verify pass");
 
         // ClientKeyExchange
-        let (pre_master_key, mut client_key_exchange_msg) =
-            ka.generate_client_key_exchange()?;
+        let (pre_master_key, mut client_key_exchange_msg) = ka.generate_client_key_exchange()?;
         let client_key_exchange = client_key_exchange_msg.bytes()?;
         self.finishedHash.write(&client_key_exchange);
         println!(
             "ClientKeyExchangeMsg: {:?}",
-            conn.write_record(RecordType::Handshake, &client_key_exchange)
-                .unwrap()
+            conn.write_record(RecordType::Handshake, &client_key_exchange).unwrap()
         );
 
         // 派生密钥.
-        let master_secret = compute_master_secret(
-            &pre_master_key,
-            &self.hello.random,
-            &self.serverHello.random,
-        );
+        let master_secret = compute_master_secret(&pre_master_key, &self.hello.random, &self.serverHello.random);
         let cipher_suit = &self.suite;
         let key_block = KeyBlock::new(
             &master_secret,
@@ -259,15 +208,11 @@ impl<
         );
 
         // client ChangeCipherSpec
-        println!(
-            "client ChangeCipherSpecMsg: {:?}",
-            conn.write_change_cipher_spec()?
-        );
+        println!("client ChangeCipherSpecMsg: {:?}", conn.write_change_cipher_spec()?);
 
         // encrypted client Finished
         let hash = self.finishedHash.sum();
-        let finished_data =
-            compute_finished_verify_data(&master_secret, &hash, true);
+        let finished_data = compute_finished_verify_data(&master_secret, &hash, true);
         let mut finished_msg = FinishedMsgOwned::new(&finished_data);
         self.finishedHash.write(finished_msg.bytes()?);
         println!(
@@ -283,16 +228,13 @@ impl<
         // encrypted server Finished
         let mut server_finished_record = conn.record_pool.get();
         conn.read_record(&mut server_finished_record)?;
-        let server_finished =
-            FinishedMsgBorrowed::parse(server_finished_record.fragment_as_ref())
-                .ok_or(Error::InvalidHandshakeMsg)?;
+        let server_finished = FinishedMsgBorrowed::parse(server_finished_record.fragment_as_ref()).ok_or(Error::InvalidHandshakeMsg)?;
         println!("Server Finished: {:?}", server_finished);
-        
+
         // check server finished
         // server computed client finished data
         let hash = self.finishedHash.sum();
-        let server_finished_should_be =
-            compute_finished_verify_data(&master_secret, &hash, false);
+        let server_finished_should_be = compute_finished_verify_data(&master_secret, &hash, false);
         if server_finished.verify_data != server_finished_should_be {
             println!("Server Finished shoud be : {:?}", server_finished_should_be);
             return Err(Error::from(Alert::HandshakeFailure));
@@ -301,9 +243,6 @@ impl<
         Ok(())
     }
 }
-
-
-
 
 #[cfg(test)]
 mod tests {
@@ -316,60 +255,55 @@ mod tests {
     fn test_connect() -> Result<()> {
         let mut conn;
         let config = Config::default();
-        if false {
-            // ebssec.boc.cn: 112.64.122.183
-            conn = Conn::connect("112.64.122.183:443", &config)
-                .expect("Couldn't connect to the server...");
-            conn.handshake()?;
-            conn.write_record(
-                RecordType::ApplicationData,
-                "GET /boc15/scripts/lib/domain.js HTTP/1.0\r\n\r\n".as_bytes(),
-            )
-            .unwrap();
-            println!("Server data:");
-            let mut record = conn.record_pool.get();
-            loop {
-                match conn.read_record(&mut record) {
-                    Ok(_) => print!(
-                        "{}",
-                        String::from_utf8(record.fragment_as_ref().to_owned())
-                            .unwrap()
-                    ),
-                    Err(e) => {
-                        println!("\n{:?}", e);
-                        break;
-                    }
+        
+        // ebssec.boc.cn: 112.64.122.183
+        conn = Conn::connect("112.64.122.183:443", &config).expect("Couldn't connect to the server...");
+        conn.handshake()?;
+        conn.write_record(
+            RecordType::ApplicationData,
+            "GET /boc15/scripts/lib/domain.js HTTP/1.0\r\n\r\n".as_bytes(),
+        )
+        .unwrap();
+        println!("Server data:");
+        let mut record = conn.record_pool.get();
+        loop {
+            match conn.read_record(&mut record) {
+                Ok(_) => print!("{}", String::from_utf8(record.fragment_as_ref().to_owned()).unwrap()),
+                Err(e) => {
+                    println!("\n{:?}", e);
+                    break;
                 }
             }
-            println!("Server data end.");
-        } else {
-            conn = Conn::connect("127.0.0.1:8080", &config)
-                .expect("Couldn't connect to the server...");
-            conn.handshake()?;
-            let mut record = conn.record_pool.get();
-
-            for _ in 0..1 {
-                conn.write_record(
-                    RecordType::ApplicationData,
-                        "GET / HTTP/1.0\r\n\r\n".as_bytes(),
-                )
-                .unwrap();
-                match conn.read_record(&mut record) {
-                    Ok(()) => print!(
-                        "{}\n\n",
-                        String::from_utf8(record.fragment_as_ref().to_owned())
-                            .unwrap()
-                    ),
-                    Err(e) => {
-                        // Err(Alert("close notify"))
-                        println!("\n{:?}", e);
-                        break;
-                    }
-                }
-            }
-            _ = conn.write_alert(Alert::CloseNotify);
-            println!("Server data end.");
         }
+        println!("Server data end.");
+    
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_connect_local() -> Result<()> {
+        let mut conn;
+        let config = Config::default();
+
+        conn = Conn::connect("127.0.0.1:8080", &config).expect("Couldn't connect to the server...");
+        conn.handshake()?;
+        let mut record = conn.record_pool.get();
+
+        for _ in 0..1 {
+            conn.write_record(RecordType::ApplicationData, "GET / HTTP/1.0\r\n\r\n".as_bytes())
+                .unwrap();
+            match conn.read_record(&mut record) {
+                Ok(()) => print!("{}\n\n", String::from_utf8(record.fragment_as_ref().to_owned()).unwrap()),
+                Err(e) => {
+                    // Err(Alert("close notify"))
+                    println!("\n{:?}", e);
+                    break;
+                }
+            }
+        }
+        _ = conn.write_alert(Alert::CloseNotify);
+        println!("Server data end.");
 
         Ok(())
     }

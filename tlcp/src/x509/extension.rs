@@ -1,5 +1,5 @@
 use super::{
-    name::{Name, RelativeDistinguishedName},
+    name::*,
     types::*,
 };
 
@@ -183,6 +183,7 @@ enum Value<'a> {
     // FreshestCRL(FreshestCRL<'a>),
 }
 
+#[allow(unused_macros)]
 macro_rules! DeclareExtensionValue {
     ($type: ident, $critical:expr, $oid: ident) => {
         impl<'a> $type<'a> {

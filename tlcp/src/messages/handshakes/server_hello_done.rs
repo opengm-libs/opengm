@@ -1,5 +1,4 @@
-use opengm_crypto::cryptobyte::{Builder, Parser, parser::AsParser};
-use crate::{messages::HandshakeMsgType, Error, Result};
+use crate::messages::HandshakeMsgType;
 
 const MSG_TYPE:HandshakeMsgType = HandshakeMsgType::ServerHelloDone;
 

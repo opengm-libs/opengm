@@ -12,7 +12,6 @@ mod extension;
 mod util;
 mod types;
 
-pub use util::*;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum PublicKeyAlgorithm {

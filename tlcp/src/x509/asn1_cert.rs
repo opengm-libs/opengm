@@ -145,7 +145,7 @@ pub struct PublicKeyInfo<'a> {
 mod tests {
     use base64::prelude::*;
 
-    use super::{Asn1Certificate, Certificate};
+    use super::Certificate;
 
     // TODO: there is a oid(0 9 2342 19200300 100 1 25)?
     const certs: &[&str] = &[

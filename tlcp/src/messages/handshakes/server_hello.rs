@@ -1,7 +1,7 @@
 
-use crate::messages::{HandshakeMsgType, HANDSHAKD_HEADER_LENGTH};
+use crate::messages::HandshakeMsgType;
 use opengm_crypto::cryptobyte::{Builder, Parser, parser::AsParser};
-use crate::{Result, Error};
+use crate::Result;
 
 const MSG_TYPE:HandshakeMsgType = HandshakeMsgType::ServerHello;
 //TODO: Extensions
@@ -111,11 +111,8 @@ impl<'a> ServerHelloMsgBorrowed<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::consts::{COMPRESSION_NONE, TLCP_ECC_SM4_CBC_SM3, TLCP_ECC_SM4_GCM_SM3, VERSION_TLCP};
-    use hex_literal::hex;
-
+    use crate::consts::{COMPRESSION_NONE, TLCP_ECC_SM4_CBC_SM3, VERSION_TLCP};
     use super::*;
-
 
     #[test]
     fn test_serverhello() {
