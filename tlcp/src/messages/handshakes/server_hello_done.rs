@@ -1,8 +1,5 @@
-use core::borrow;
-
-use crate::messages::{HandshakeMsgType, HANDSHAKD_HEADER_LENGTH};
 use opengm_crypto::cryptobyte::{Builder, Parser, parser::AsParser};
-use crate::{Result, Error};
+use crate::{messages::HandshakeMsgType, Error, Result};
 
 const MSG_TYPE:HandshakeMsgType = HandshakeMsgType::ServerHelloDone;
 

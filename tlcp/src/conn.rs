@@ -1,6 +1,5 @@
 use cipher_suits::CipherSuite;
 use config::Config;
-use consts::*;
 use handshake_client::{
     make_client_hello, precess_server_hello, ClientHandshakeState,
 };
@@ -10,7 +9,7 @@ use handshake_server::{
 use messages::*;
 use opengm_crypto::sm3;
 use opengm_crypto::sm3::Digest;
-use rand::{Rng, RngCore};
+use rand::RngCore;
 use record::RecordPool;
 use traits::{TlcpAead, TlcpEnc, TlcpMac};
 use utils::check_padding;
@@ -567,7 +566,7 @@ impl<C: io::Write + io::Read> Conn<C> {
         // process client_hello_msg. choose version and cipher_suite.
         let (vers, cipher_suits_id) =
             precess_client_hello(&client_hello_msg, &self.config)?;
-        let mut server_hello_msg =
+        let server_hello_msg =
             make_server_hello(vers, cipher_suits_id, &self.config);
         let cipher_suit = CipherSuite::try_from(cipher_suits_id)?;
 

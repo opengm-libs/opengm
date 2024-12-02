@@ -8,7 +8,6 @@ mod server_hello_done;
 mod server_key_exchange;
 
 pub use certificate::*;
-pub use certificate_verify::*;
 pub use client_hello::*;
 pub use client_key_exchange::*;
 pub use finished::*;

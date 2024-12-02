@@ -1,11 +1,3 @@
-use rand::Rng;
-
-use crate::{config::Config, consts::{COMPRESSION_NONE, VERSION_TLCP}, messages::ClientHelloMsgOwned};
-
-
-
-
-
 // #[derive(Debug, Clone, Eq, PartialEq)]
 // pub enum Content<'a> {
 //     Borrowed(&'a [u8]),

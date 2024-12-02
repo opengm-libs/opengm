@@ -1,7 +1,7 @@
 
 use num::{bigint::Sign, BigInt};
 use opengm_crypto::sm2;
-use rand::{thread_rng, Rng, RngCore};
+use rand::{thread_rng, RngCore};
 use opengm_crypto::cryptobyte::{asn1::BitString, oid::OidSignatureSM2WithSM3, Builder};
 
 
@@ -50,14 +50,17 @@ impl CryptoEngine for SM2Engine{
     }
 
     fn sign(&self, plain: &[u8]) -> Result<Vec<u8>> {
+        let _ = plain;
         todo!()
     }
 
     fn encrypt(&self, plain: &[u8]) -> Result<Vec<u8>> {
+        let _ = plain;
         todo!()
     }
     
     fn generate_random(b: &mut [u8]) -> Result<()> {
+        let _ = b;
         todo!()
     }
 }

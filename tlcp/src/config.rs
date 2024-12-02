@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use rand::{thread_rng, RngCore};
 
-use crate::{consts::*, crypto_engine::{CryptoEngine, SM2Engine}, x509::{Certificate, PublicKeyAlgorithm}};
+use crate::{consts::*, crypto_engine::SM2Engine, x509::{Certificate, PublicKeyAlgorithm}};
 use opengm_crypto::sm2::{PublicKey, U256};
 
 pub struct CertificatesChain{

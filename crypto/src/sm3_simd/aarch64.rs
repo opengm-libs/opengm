@@ -623,17 +623,6 @@ mod tests {
         });
     }
 
-    #[test]
-    fn transpose() {
-        unsafe {
-            let a: uint32x4_t = transmute([0, 1, 2, 3]);
-            let b: uint32x4_t = transmute([4, 5, 6, 7]);
-            let c: uint32x4_t = transmute([8, 9, 10, 11]);
-            let d: uint32x4_t = transmute([12, 13, 14, 15]);
-            let (a, b, c, d) = transpose4(a, b, c, d);
-            println!("");
-        }
-    }
 
     #[test]
     fn test_load_message() {

@@ -1,8 +1,6 @@
-use core::borrow;
-
 use crate::messages::{HandshakeMsgType, HANDSHAKD_HEADER_LENGTH};
 use opengm_crypto::cryptobyte::{Builder, Parser, parser::AsParser};
-use crate::{Result, Error};
+use crate::Result;
 
 const MSG_TYPE:HandshakeMsgType = HandshakeMsgType::ClientHello;
 
@@ -161,8 +159,7 @@ impl<'a> ClientHelloMsgBorrowed<'a> {
 #[cfg(test)]
 mod tests {
     use crate::consts::{COMPRESSION_NONE, TLCP_ECC_SM4_CBC_SM3, TLCP_ECC_SM4_GCM_SM3, VERSION_TLCP};
-    use hex_literal::hex;
-
+    
     use super::*;
 
     #[test]

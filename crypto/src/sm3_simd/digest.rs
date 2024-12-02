@@ -36,7 +36,7 @@ impl Digest{
     }
 
     // write data to the lane idx
-    fn write(idx: usize, data: &[u8]){
+    fn write(_idx: usize, _data: &[u8]){
 
     }
 }

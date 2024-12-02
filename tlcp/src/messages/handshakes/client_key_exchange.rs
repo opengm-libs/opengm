@@ -1,9 +1,6 @@
-
-use core::borrow;
-
-use crate::messages::{HandshakeMsgType, HANDSHAKD_HEADER_LENGTH};
-use opengm_crypto::cryptobyte::{Builder, Parser, parser::AsParser};
-use crate::{Result, Error};
+use crate::messages::HandshakeMsgType;
+use opengm_crypto::cryptobyte::{Builder, Parser};
+use crate::Result;
 
 use super::parse_handshake_msg_header;
 
