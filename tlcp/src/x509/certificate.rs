@@ -2,7 +2,8 @@ use std::any::Any;
 
 use num::BigInt;
 use opengm_crypto::sm2;
-use opengm_crypto::cryptobyte::{asn1::*, oid::OidSignatureSM2WithSM3, sm2::*, Parser, Tag};
+use opengm_crypto::cryptobyte::{asn1::*, oid::OidSignatureSM2WithSM3, Parser, Tag};
+use opengm_crypto::cms::sm2::ASN1Decode;
 use super::errors::{Error, Result};
 
 

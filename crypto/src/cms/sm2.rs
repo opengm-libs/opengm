@@ -1,6 +1,7 @@
 use num::BigInt;
 use crate::{sm2::*, sm3};
-use super::{Builder, Parser};
+use crate::cryptobyte::{Builder, Parser};
+
 use alloc::vec::*;
 
 fn bigint_to_u256(n: &BigInt) ->U256{

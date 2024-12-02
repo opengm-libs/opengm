@@ -5,9 +5,10 @@ use rand::Rng;
 mod ec;
 mod encrypt;
 mod key_exchange;
-pub mod sign;
 
+pub mod sign;
 pub mod error;
+
 pub use encrypt::*;
 pub use sign::*;
 

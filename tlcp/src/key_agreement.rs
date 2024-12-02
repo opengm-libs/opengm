@@ -1,8 +1,8 @@
 use crate::consts::{is_dhe, TLCP_ECC_SM4_CBC_SM3, TLCP_ECC_SM4_GCM_SM3};
 use crate::crypto_engine::SM2Engine;
 use opengm_crypto::cryptobyte::parser::AsParser;
-use opengm_crypto::cryptobyte::sm2::*;
 use opengm_crypto::cryptobyte::{Builder, Parser};
+use opengm_crypto::cms::sm2::{encode_sm2_cipher, ASN1Decode};
 use crate::messages::*;
 use crate::{
     messages::{ClientHelloMsgOwned, ServerHelloMsgBorrowed},

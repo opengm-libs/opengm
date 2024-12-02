@@ -13,12 +13,11 @@ pub mod builder;
 pub mod errors;
 pub mod parser;
 pub mod oid;
-pub mod sm2;
 pub use builder::Builder;
 pub use errors::{Error, Result};
 pub use parser::Parser;
 
-use std::convert::*;
+// use std::convert::*;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Tag(pub u8);

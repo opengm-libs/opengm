@@ -18,9 +18,7 @@
 #![no_std]
 #![warn(clippy::std_instead_of_alloc, clippy::std_instead_of_core)]
 
-pub mod rand;
 
-// pub mod error;
 pub mod sm4;
 #[macro_use]
 pub mod sm3;
@@ -28,7 +26,9 @@ pub mod sm3;
 #[macro_use]
 pub mod sm3_simd;
 
+pub mod rand;
 pub mod sm2;
+pub mod cms;
 pub mod blockmode;
 pub mod mac;
 pub mod traits;
@@ -41,7 +41,6 @@ pub mod x;
 #[macro_use]
 mod internal;
 
-#[cfg(feature = "alloc")]
 extern crate alloc;
 
 #[cfg(any(feature = "std", test))]
